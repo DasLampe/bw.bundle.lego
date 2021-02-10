@@ -55,7 +55,7 @@ for domain, config in cfg.get('domains').items():
                    f" /opt/lego/lego --accept-tos --email {email} --{challenge.get('type')} {challenge.get('provider')}"
                    f" --path {path}"
                    f' --domains {domain}'
-                   f" --domains {' --domains'.join(config.get('additional_domains'))}"
+                   f" --domains {' --domains '.join(config.get('additional_domains'))}"
                    " run",
         'needs': [
             'action:unpack_lego',

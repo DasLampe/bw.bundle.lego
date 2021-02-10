@@ -13,3 +13,23 @@ defaults = {
         }
     },
 }
+
+@metadata_reactor
+def add_nginx_domains(metadata):
+    if not node.has_bundle('nginx'):
+        raise DoNotRunAgain
+
+    domains = {}
+    for domain, config in metadata.get('nginx/sites', {}).items():
+        if not config.get('ssl', {}).get('letsencrypt', False):
+            continue
+
+        domains[domain] = {
+            'additional_domains': config.get('additional_server_names'),
+        }
+
+    return {
+        'lego': {
+            'domains': domains
+        }
+    }

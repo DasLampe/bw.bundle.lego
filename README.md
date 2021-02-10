@@ -5,6 +5,10 @@ Install and configure Let's Encrypt client written in go [lego](https://go-acme.
 ## Dependencies
 - [Download Item](https://github.com/sHorst/bw.item.download)
 
+## Supports
+- Linux (AMD64)
+- [nginx Bundle](https://github.com/DasLampe/bw.bundle.nginx)
+
 ## Config
 ```python
 node["foobar"] = {
