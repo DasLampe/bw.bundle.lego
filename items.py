@@ -50,15 +50,26 @@ for name, challenge in cfg.get('challenges', {}).items():
 for domain, config in cfg.get('domains').items():
     challenge = cfg.get('challenges', {}).get(config.get('challenge', default_challenge))
 
+    command = f"source {path}/challenges/{config.get('challenge', default_challenge)}/.env && "\
+              f" /opt/lego/lego --accept-tos --email {email} --{challenge.get('type')} {challenge.get('provider')}"\
+              f" --path {path}"\
+              f' --domains {domain}'\
+              f" --domains {' --domains '.join(config.get('additional_domains'))}"
+
     actions[f'request_cert_for_{domain}'] = {
-        'command': f"source {path}/challenges/{config.get('challenge', default_challenge)}/.env && "
-                   f" /opt/lego/lego --accept-tos --email {email} --{challenge.get('type')} {challenge.get('provider')}"
-                   f" --path {path}"
-                   f' --domains {domain}'
-                   f" --domains {' --domains '.join(config.get('additional_domains'))}"
-                   " run",
+        'command': f"{command} run",
         'needs': [
             'action:unpack_lego',
             f'tag:{bundle_name}_challenges',
-        ]
+        ],
+        'unless': f'test -d {path}/accounts/acme-v02.api.letsencrypt.org/{email} && '
+                  f' test -f {path}/certificates/{domain}.json'
+    }
+
+    files[f'/etc/cron.daily/renew_cert_{domain.replace(".", "_")}'] = {
+        'content': f"""#!/usr/bin/env bash"
+                   {command} renew
+        """,
+        'mode': '750',
+        'owner': 'root',
     }
