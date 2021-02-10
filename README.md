@@ -1,0 +1,39 @@
+# lego via Bundlewrap
+
+Install and configure Let's Encrypt client written in go [lego](https://go-acme.github.io/lego/) via Bundlewrap.
+
+## Dependencies
+- [Download Item](https://github.com/sHorst/bw.item.download)
+
+## Config
+```python
+node["foobar"] = {
+    'metadata': {
+        'lego': {
+            'version': '4.2.0',
+            'checksum': '3b0f6c715b79a6dc692e5c3f5890905bc4404a33469cecc2d0b60c5bf5c2076f',
+            'email': 'info@example.org',
+            'path': '/etc/lego',
+            'default_challenge': 'dns-cloudflare',
+            'domains': {
+                'example.org': {
+                    'challenge': 'dns-cloudflare',
+                    'additional_domains': [
+                        'www.example.org', 'foobar.example.org',
+                    ],
+                },
+                'yetAnotherDomain.example.org': {},
+            },
+            'challenges': {
+                'dns-cloudflare': {
+                    'type': 'dns',
+                    'provider': 'cloudflare',
+                    'environment': {
+                        'CLOUDFLARE_DNS_API_TOKEN': '1234567890abcdefghijklmnopqrstuvwxyz',
+                    },
+                },
+            },
+        },
+    }
+}
+```
