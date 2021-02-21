@@ -50,7 +50,7 @@ for name, challenge in cfg.get('challenges', {}).items():
 for domain, config in cfg.get('domains').items():
     challenge = cfg.get('challenges', {}).get(config.get('challenge', default_challenge))
 
-    command = f"source {path}/challenges/{config.get('challenge', default_challenge)}/.env && "\
+    command = f". {path}/challenges/{config.get('challenge', default_challenge)}/.env && "\
               f" /opt/lego/lego --accept-tos --email {email} --{challenge.get('type')} {challenge.get('provider')}"\
               f" --path {path}"\
               f' --domains {domain}'\
