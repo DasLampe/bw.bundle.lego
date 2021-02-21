@@ -6,6 +6,7 @@ defaults = {
         'path': '/etc/lego',
         'challenges': {
             'http': {
+                'type': 'http',
                 'provider': '--http.webroot /var/www/letsencrypt',
                 'environment': {
                 }
