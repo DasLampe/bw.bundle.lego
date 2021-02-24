@@ -26,7 +26,8 @@ actions = {
         'needs': [
             'directory:/opt/lego',
             f'download:/tmp/lego_{version}.tar.gz',
-        ]
+        ],
+        'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
     }
 }
 
