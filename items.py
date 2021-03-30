@@ -31,7 +31,19 @@ actions = {
     }
 }
 
-files = {}
+files = {
+    f'{path}/hooks/renew_hook.sh': {
+        'content': f"""#!/usr/bin/env bash"
+            {cfg.get('renew_hook', '')}
+        """,
+        "owner": 'root',
+        "group": 'root',
+        "mode": '660',
+        "tags": [
+            f'{bundle_name}_hooks',
+        ],
+    },
+}
 
 for name, challenge in cfg.get('challenges', {}).items():
     files[f'{path}/challenges/{name}/.env'] = {
@@ -62,6 +74,7 @@ for domain, config in cfg.get('domains').items():
         'needs': [
             'action:unpack_lego',
             f'tag:{bundle_name}_challenges',
+            f'tag:{bundle_name}_hooks',
         ],
         'unless': f'test -d {path}/accounts/acme-v02.api.letsencrypt.org/{email} && '
                   f' test -f {path}/certificates/{domain}.json'
@@ -69,8 +82,12 @@ for domain, config in cfg.get('domains').items():
 
     files[f'/etc/cron.daily/renew_cert_{domain.replace(".", "_")}'] = {
         'content': f"""#!/usr/bin/env bash"
-                   {command} renew
+                   {command} renew --renew-hook="{path}/hooks/renew_hook.sh"
         """,
         'mode': '750',
         'owner': 'root',
+        'needs': [
+            f'tag:{bundle_name}_challenges',
+            f'tag:{bundle_name}_hooks',
+        ]
     }

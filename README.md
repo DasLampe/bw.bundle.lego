@@ -28,6 +28,7 @@ node["foobar"] = {
                 },
                 'yetAnotherDomain.example.org': {},
             },
+            'renew_hook': "systemctl restart nginx",
             'challenges': {
                 'dns-cloudflare': {
                     'type': 'dns',

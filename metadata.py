@@ -11,7 +11,8 @@ defaults = {
                 'environment': {
                 }
             }
-        }
+        },
+        'renew_hook': '',
     },
 }
 
