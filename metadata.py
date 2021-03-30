@@ -27,7 +27,7 @@ def add_nginx_domains(metadata):
             continue
 
         domains[domain] = {
-            'additional_domains': config.get('additional_server_names'),
+            'additional_domains': config.get('additional_server_names', []),
         }
 
     return {

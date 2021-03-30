@@ -66,8 +66,10 @@ for domain, config in cfg.get('domains').items():
     command = f". {path}/challenges/{config.get('challenge', default_challenge)}/.env && "\
               f" /opt/lego/lego --accept-tos --email {email} --{challenge.get('type')} {challenge.get('provider')}"\
               f" --path {path}"\
-              f' --domains {domain}'\
-              f" --domains {' --domains '.join(config.get('additional_domains'))}"
+              f' --domains {domain}'
+
+    if config.get('additional_domains', []):
+        command = command + f" --domains {' --domains '.join(config.get('additional_domains'))}"
 
     actions[f'request_cert_for_{domain}'] = {
         'command': f"{command} run",
