@@ -33,12 +33,11 @@ actions = {
 
 files = {
     f'{path}/hooks/renew_hook.sh': {
-        'content': f"""#!/usr/bin/env bash"
-            {cfg.get('renew_hook', '')}
-        """,
+        'content': f"""#!/usr/bin/env bash
+            {cfg.get('renew_hook', '')}""",
         "owner": 'root',
         "group": 'root',
-        "mode": '660',
+        "mode": '770',
         "tags": [
             f'{bundle_name}_hooks',
         ],
@@ -83,7 +82,7 @@ for domain, config in cfg.get('domains').items():
     }
 
     files[f'/etc/cron.daily/renew_cert_{domain.replace(".", "_")}'] = {
-        'content': f"""#!/usr/bin/env bash"
+        'content': f"""#!/usr/bin/env bash
                    {command} renew --renew-hook="{path}/hooks/renew_hook.sh"
         """,
         'mode': '750',
