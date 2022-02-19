@@ -1,37 +1,17 @@
 bundle_name = "lego"
 
-cfg = node.metadata.get(bundle_name, {})
+cfg = node.metadata.get(bundle_name)
 version = cfg.get('version')
 email = cfg.get('email')
 path = cfg.get('path')
 default_challenge = cfg.get('default_challenge', 'http')
 
-downloads = {
-    f'/tmp/lego_{version}.tar.gz': {
-        'url': f"https://github.com/go-acme/lego/releases/download/v{version}/lego_v{version}_linux_amd64.tar.gz",
-        'sha256': cfg.get('checksum'),
-        'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
-    }
-}
-
-directories = {
-    '/opt/lego': {
-    },
-    path: {}
-}
-
-actions = {
-    'unpack_lego': {
-        'command': f'tar xfz /tmp/lego_{version}.tar.gz -C /opt/lego',
-        'needs': [
-            'directory:/opt/lego',
-            f'download:/tmp/lego_{version}.tar.gz',
-        ],
-        'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
-    }
-}
-
 files = {
+    f'/tmp/lego_{version}.tar.gz': {
+        'source': f"https://github.com/go-acme/lego/releases/download/v{version}/lego_v{version}_linux_amd64.tar.gz",
+        'content_type': 'download',
+        'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
+    },
     f'{path}/hooks/renew_hook.sh': {
         'content': f"""#!/usr/bin/env bash
             {cfg.get('renew_hook', '')}""",
@@ -43,6 +23,25 @@ files = {
         ],
     },
 }
+
+directories = {
+    '/opt/lego': {
+    },
+    path: {}
+}
+
+actions = {
+    'unpack_lego': {
+        'command': f'echo {cfg.get("checksum")} /tmp/lego_{version}.tar.gz | sha256sum -c && tar xfz /tmp/lego_{version}.tar.gz -C /opt/lego',
+        'needs': [
+            'directory:/opt/lego',
+            f'file:/tmp/lego_{version}.tar.gz',
+        ],
+        'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
+    }
+}
+
+
 
 for name, challenge in cfg.get('challenges', {}).items():
     files[f'{path}/challenges/{name}/.env'] = {
