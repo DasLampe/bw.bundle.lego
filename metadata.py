@@ -1,7 +1,7 @@
 defaults = {
     'lego': {
-        'version': '4.10.0',
-        'checksum': 'cc1867d0e4e1ca4c6f545f8311e7a4b7150ce02d22c704a64d1f5c545c2ef7f0',
+        'version': '4.16.1',
+        'checksum': 'e9826f955337c1fd825d21b073168692711985e25db013ff6b00e9a55a9644b4',
         'default_challenge': 'http',
         'path': '/etc/lego',
         'challenges': {
