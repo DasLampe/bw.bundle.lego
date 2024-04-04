@@ -10,6 +10,8 @@ Install and configure Let's Encrypt client written in go [lego](https://go-acme.
 - [nginx Bundle](https://github.com/DasLampe/bw.bundle.nginx)
 
 ## Config
+At minimum lego requires an Email-Address, so please enter at least the `email` field.
+
 ```python
 node["foobar"] = {
     'metadata': {
@@ -36,6 +38,9 @@ node["foobar"] = {
                     'environment': {
                         'CLOUDFLARE_DNS_API_TOKEN': '1234567890abcdefghijklmnopqrstuvwxyz',
                     },
+                    'additional_params': [
+                        '--dns.resolvers 1.1.1.1',
+                    ],
                 },
             },
         },

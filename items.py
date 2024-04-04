@@ -69,6 +69,9 @@ for domain, config in cfg.get('domains').items():
     if config.get('additional_domains', []):
         command = command + f" --domains {' --domains '.join(config.get('additional_domains'))}"
 
+    if challenge.get('additional_params', []):
+        command = command + ' ' + ' '.join(challenge.get('additional_params'))
+
     actions[f'request_cert_for_{domain}'] = {
         'command': f"{command} run",
         'needs': [

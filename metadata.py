@@ -9,7 +9,8 @@ defaults = {
                 'type': 'http',
                 'provider': '--http.webroot /var/www/letsencrypt',
                 'environment': {
-                }
+                },
+                'additional_params': '',
             }
         },
         'renew_hook': '',
