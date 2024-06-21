@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+for renewal in {{ lego_path }}/renewals/renewal_*.sh; do
+  echo "Run renewal ${renewal}"
+  # shellcheck source=/dev/null
+  source "${renewal}"
+  echo "Finished renewal ${renewal}"
+done

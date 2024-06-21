@@ -25,11 +25,70 @@ files = {
             f'{bundle_name}_hooks',
         ],
     },
+    f'{path}/renewals/renewals.sh': {
+        'source': 'etc/lego/renewals/renewal.sh.j2',
+        'content_type': 'jinja2',
+        'context': {
+            'lego_path': path,
+        },
+        'owner': 'root',
+        'group': 'root',
+        'mode': '770',
+        'tags': [
+            f'{bundle_name}_renewals',
+        ],
+    },
+    f'/etc/systemd/system/lego-renewal.service': {
+        'source': 'etc/systemd/system/lego-renewal.service.j2',
+        'content_type': 'jinja2',
+        'context': {
+            'lego_path': path,
+        },
+        'owner': 'root',
+        'group': 'root',
+        'mode': '640',
+        'triggers': [
+            'action:systemctl-daemon-reload',
+        ],
+        'tags': [
+            f'{bundle_name}_renewals',
+        ],
+    },
+    f'/etc/systemd/system/lego-renewal.timer': {
+        'source': 'etc/systemd/system/lego-renewal.timer.j2',
+        'content_type': 'jinja2',
+        'context': {
+            'renewal_time': cfg.get('renewal_time'),
+            'randomized_delay': cfg.get('randomized_delay'),
+        },
+        'owner': 'root',
+        'group': 'root',
+        'mode': '640',
+        'triggers': [
+            'action:systemctl-daemon-reload',
+            f'svc_systemd:lego-renewal.timer:restart'
+        ],
+        'tags': [
+            f'{bundle_name}_renewals',
+        ],
+    }
+}
+
+svc_systemd = {
+        'lego-renewal.timer': {
+        'running': True,
+        'enabled': True,
+        'needs': [
+            'action:systemctl-daemon-reload',
+        ],
+    }
 }
 
 directories = {
     '/opt/lego': {},
-    path: {}
+    path: {},
+    f'{path}/hooks': {},
+    f'{path}/renewals': {},
 }
 
 actions = {
@@ -40,7 +99,14 @@ actions = {
             f'file:/tmp/lego_{version}.tar.gz',
         ],
         'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
-    }
+    },
+    'systemctl-daemon-reload': {
+        'command': 'systemctl daemon-reload',
+        'triggered': True,
+        'needs': [
+            'tag:systemd_units',
+        ],
+    },
 }
 
 
@@ -83,7 +149,7 @@ for domain, config in cfg.get('domains').items():
         'unless': f'test -f {path}/certificates/{domain}.json'
     }
 
-    files[f'/etc/cron.daily/renew_cert_{domain.replace(".", "_")}'] = {
+    files[f'{path}/renewals/renewal_{domain.replace("*", "_").replace(".", "_")}.sh'] = {
         'content': f'''#!/usr/bin/env bash
                    {command} renew --renew-hook="{path}/hooks/renew_hook.sh"
         ''',
@@ -92,5 +158,13 @@ for domain, config in cfg.get('domains').items():
         'needs': [
             f'tag:{bundle_name}_challenges',
             f'tag:{bundle_name}_hooks',
+        ],
+        'tags': [
+            f'{bundle_name}_renewals',
         ]
+    }
+
+    # For backward compatibility, remove old cronjobs
+    files[f'/etc/cron.daily/renew_cert_{domain.replace(".", "_")}'] = {
+        'delete': True,
     }

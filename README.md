@@ -30,7 +30,9 @@ node["foobar"] = {
                 },
                 'yetAnotherDomain.example.org': {},
             },
-            'renew_hook': "systemctl restart nginx",
+            'renew_hooks': [
+                '''install -u nginx -g nginx -m 0640 ${LEGO_CERT_PEM_PATH} /etc/nginx/ssl/
+                systemctl restart nginx''',
             'challenges': {
                 'dns-cloudflare': {
                     'type': 'dns',
@@ -43,6 +45,9 @@ node["foobar"] = {
                     ],
                 },
             },
+            # see https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html
+            'renewal_time': 'Mon..Fri *-*-* 03:30:00 UTC',
+            'randomized_delay': '1h',
         },
     }
 }

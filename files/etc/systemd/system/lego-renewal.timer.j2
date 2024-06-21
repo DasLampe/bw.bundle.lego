@@ -1,0 +1,7 @@
+[Unit]
+Description=Run lego-renewal.service at specific time
+
+[Timer]
+OnCalendar={{ renewal_time }}
+Unit=lego-renewal.service
+RandomizedDelay={{ randomized_delay }}

@@ -1,0 +1,6 @@
+[Unit]
+Description="Run lego certificate renewals"
+
+[Service]
+Type=oneshot
+ExecStart={{ lego_path }}/renewals/renewals.sh
