@@ -28,8 +28,7 @@ files = {
 }
 
 directories = {
-    '/opt/lego': {
-    },
+    '/opt/lego': {},
     path: {}
 }
 
@@ -43,7 +42,6 @@ actions = {
         'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
     }
 }
-
 
 
 for name, challenge in cfg.get('challenges', {}).items():
@@ -64,32 +62,31 @@ for name, challenge in cfg.get('challenges', {}).items():
 for domain, config in cfg.get('domains').items():
     challenge = cfg.get('challenges', {}).get(config.get('challenge', default_challenge))
 
-    command = f". {path}/challenges/{config.get('challenge', default_challenge)}/.env && "\
-              f" /opt/lego/lego --accept-tos --email {email} --{challenge.get('type')} {challenge.get('provider')}"\
-              f" --path {path}"\
+    command = f'. {path}/challenges/{config.get("challenge", default_challenge)}/.env && '\
+              f' /opt/lego/lego --accept-tos --email {email} --{challenge.get("type")} {challenge.get("provider")}'\
+              f' --path {path}'\
               f' --domains {domain}'
 
     if config.get('additional_domains', []):
-        command = command + f" --domains {' --domains '.join(config.get('additional_domains'))}"
+        command = command + f' --domains {" --domains ".join(config.get("additional_domains"))}'
 
     if challenge.get('additional_params', []):
         command = command + ' ' + ' '.join(challenge.get('additional_params'))
 
     actions[f'request_cert_for_{domain}'] = {
-        'command': f"{command} run",
+        'command': f'{command} run',
         'needs': [
             'action:unpack_lego',
             f'tag:{bundle_name}_challenges',
             f'tag:{bundle_name}_hooks',
         ],
-        'unless': f'test -d {path}/accounts/acme-v02.api.letsencrypt.org/{email} && '
-                  f' test -f {path}/certificates/{domain}.json'
+        'unless': f'test -f {path}/certificates/{domain}.json'
     }
 
     files[f'/etc/cron.daily/renew_cert_{domain.replace(".", "_")}'] = {
-        'content': f"""#!/usr/bin/env bash
+        'content': f'''#!/usr/bin/env bash
                    {command} renew --renew-hook="{path}/hooks/renew_hook.sh"
-        """,
+        ''',
         'mode': '750',
         'owner': 'root',
         'needs': [
