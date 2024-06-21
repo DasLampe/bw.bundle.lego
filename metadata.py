@@ -13,9 +13,17 @@ defaults = {
                 'additional_params': '',
             }
         },
-        'renew_hook': '',
+        'renew_hooks': [],
     },
 }
+
+@metadata_reactor
+def backward_compatibility(metadata):
+    return {
+        'lego': {
+            'renew_hooks': [metadata.get('lego/renew_hook', '')],
+        }
+    }
 
 @metadata_reactor
 def add_nginx_domains(metadata):

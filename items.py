@@ -13,12 +13,15 @@ files = {
         'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
     },
     f'{path}/hooks/renew_hook.sh': {
-        'content': f"""#!/usr/bin/env bash
-            {cfg.get('renew_hook', '')}""",
-        "owner": 'root',
-        "group": 'root',
-        "mode": '770',
-        "tags": [
+        'source': 'etc/lego/hooks/renew_hook.sh.j2',
+        'content_type': 'jinja2',
+        'context': {
+            'renew_hooks': cfg.get('renew_hooks'),
+        },
+        'owner': 'root',
+        'group': 'root',
+        'mode': '770',
+        'tags': [
             f'{bundle_name}_hooks',
         ],
     },
