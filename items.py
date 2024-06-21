@@ -13,10 +13,23 @@ files = {
         'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
     },
     f'{path}/hooks/renew_hook.sh': {
-        'source': 'etc/lego/hooks/renew_hook.sh.j2',
+        'source': 'etc/lego/hooks/hook.sh.j2',
         'content_type': 'jinja2',
         'context': {
-            'renew_hooks': cfg.get('renew_hooks'),
+            'hooks': cfg.get('renew_hooks'),
+        },
+        'owner': 'root',
+        'group': 'root',
+        'mode': '770',
+        'tags': [
+            f'{bundle_name}_hooks',
+        ],
+    },
+    f'{path}/hooks/run_hook.sh': {
+        'source': 'etc/lego/hooks/hook.sh.j2',
+        'content_type': 'jinja2',
+        'context': {
+            'hooks': cfg.get('run_hooks', cfg.get('renew_hooks')),
         },
         'owner': 'root',
         'group': 'root',
@@ -140,7 +153,7 @@ for domain, config in cfg.get('domains').items():
         command = command + ' ' + ' '.join(challenge.get('additional_params'))
 
     actions[f'request_cert_for_{domain}'] = {
-        'command': f'{command} run',
+        'command': f'{command} run --run-hook="{path}/hooks/run_hook.sh"',
         'needs': [
             'action:unpack_lego',
             f'tag:{bundle_name}_challenges',
