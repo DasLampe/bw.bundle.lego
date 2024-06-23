@@ -159,7 +159,8 @@ for domain, config in cfg.get('domains').items():
             f'tag:{bundle_name}_challenges',
             f'tag:{bundle_name}_hooks',
         ],
-        'unless': f'test -f {path}/certificates/{domain}.json'
+        'unless': f'test -f {path}/certificates/{domain}.json && '
+                  f'test "$(openssl x509 -in {path}/certificates/{domain}.crt -noout -ext subjectAltName | grep DNS | sed "s/DNS://g" | sed "s/ //g")" = "{",".join(sorted(config.get("additional_domains") + [domain]))}"',
     }
 
     files[f'{path}/renewals/renewal_{domain.replace("*", "_").replace(".", "_")}.sh'] = {
