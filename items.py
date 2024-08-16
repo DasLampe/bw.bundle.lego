@@ -2,13 +2,14 @@ bundle_name = "lego"
 
 cfg = node.metadata.get(bundle_name)
 version = cfg.get('version')
+arch = cfg.get('arch')
 email = cfg.get('email')
 path = cfg.get('path')
 default_challenge = cfg.get('default_challenge', 'http')
 
 files = {
     f'/tmp/lego_{version}.tar.gz': {
-        'source': f"https://github.com/go-acme/lego/releases/download/v{version}/lego_v{version}_linux_amd64.tar.gz",
+        'source': f"https://github.com/go-acme/lego/releases/download/v{version}/lego_v{version}_{arch}.tar.gz",
         'content_type': 'download',
         'unless': f'test -f /opt/lego/lego && /opt/lego/lego --version | grep "lego version {version} " > /dev/null',
     },
