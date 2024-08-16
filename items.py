@@ -17,7 +17,7 @@ files = {
         'source': 'etc/lego/hooks/hook.sh.j2',
         'content_type': 'jinja2',
         'context': {
-            'hooks': cfg.get('renew_hooks'),
+            'hooks': [item for item in cfg.get('renew_hooks') if item],
         },
         'owner': 'root',
         'group': 'root',
@@ -30,7 +30,7 @@ files = {
         'source': 'etc/lego/hooks/hook.sh.j2',
         'content_type': 'jinja2',
         'context': {
-            'hooks': cfg.get('run_hooks', cfg.get('renew_hooks')),
+            'hooks': [item for item in cfg.get('run_hooks', cfg.get('renew_hooks')) if item],
         },
         'owner': 'root',
         'group': 'root',
