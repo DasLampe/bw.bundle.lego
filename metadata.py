@@ -15,7 +15,7 @@ defaults = {
             }
         },
         'renew_hooks': [],
-        'run_hooks': [],
+        #'run_hooks': [],
         'renewal_time': 'Mon..Fri *-*-* 03:30:00 UTC', # See https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html
         'randomized_delay': '1h',
     },
