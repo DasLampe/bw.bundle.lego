@@ -5,3 +5,6 @@ Description=Run lego-renewal.service at specific time
 OnCalendar={{ renewal_time }}
 Unit=lego-renewal.service
 RandomizedDelaySec={{ randomized_delay }}
+
+[Install]
+WantedBy=timers.target
