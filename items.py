@@ -127,7 +127,7 @@ actions = {
 for name, challenge in cfg.get('challenges', {}).items():
     files[f'{path}/challenges/{name}/.env'] = {
         'source': 'etc/lego/challenges/env.template',
-        'content_type': 'mako',
+        'content_type': 'jinja2',
         'context': {
             'config': challenge.get('environment'),
         },
