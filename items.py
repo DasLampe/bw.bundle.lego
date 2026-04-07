@@ -102,7 +102,9 @@ directories = {
     '/opt/lego': {},
     path: {},
     f'{path}/hooks': {},
-    f'{path}/renewals': {},
+    f'{path}/renewals': {
+        'purge': True,
+    },
 }
 
 actions = {
